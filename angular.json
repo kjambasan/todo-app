@@ -5,7 +5,12 @@
   "projects": {
     "todo-app": {
       "projectType": "application",
-      "schematics": {},
+      "schematics": {
+        "@schematics/angular:component": {
+          "inlineStyle": true,
+          "inlineTemplate": true
+        }
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -83,6 +88,39 @@
               "src/styles.css"
             ],
             "scripts": []
+          }
+        }
+      }
+    },
+    "icon": {
+      "projectType": "library",
+      "root": "projects/icon",
+      "sourceRoot": "projects/icon/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/icon/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/icon/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/icon/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "projects/icon/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
           }
         }
       }
