@@ -1,5 +1,5 @@
 export interface Task {
-  id: number
+  id: string
   title: string
   date: string
   done: boolean

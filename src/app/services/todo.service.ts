@@ -16,12 +16,25 @@ export class TodoService {
     return firstValueFrom(this.http.get<Task[]>(`${this.apiUrl}/tasks?date=${formatDate(date)}`));
   }
 
-  async updateTask(id: number, update: Partial<any>): Promise<void> {
+  async addTask(task: Task): Promise<void> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return firstValueFrom(this.http.post<any>(`${this.apiUrl}/tasks`, task, httpOptions));
+  }
+
+  async updateTask(id: string, update: Partial<any>): Promise<void> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
       })
     };
     return firstValueFrom(this.http.patch<any>(`${this.apiUrl}/tasks/${id}`, update, httpOptions));
+  }
+
+  async deleteTask(id: string): Promise<void> {
+    return firstValueFrom(this.http.delete<any>(`${this.apiUrl}/tasks/${id}`));
   }
 }

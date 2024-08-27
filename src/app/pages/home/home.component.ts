@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, Signal, signal, WritableSignal } from '@angular/core';
-import { getCurrentWeek, getWeekDays, getDay, isToday, isSameDay, monthDayFormat } from '../../utils/date';
+import { getCurrentWeek, getWeekDays, getDay, isToday, isSameDay, monthDayFormat, formatDate } from '../../utils/date';
 import { TodoService } from '../../services/todo.service';
 import { Task } from '../../models/task';
 
@@ -68,21 +68,44 @@ import { Task } from '../../models/task';
       <div class="w-full bg-base-200 grow">
         <div class="w-full grid h-fit gap-4 p-4">
           @for(task of tasks(); track task.id) {
-            <div class="card w-full bg-neutral text-neutral-content p-4" [ngClass]="{'opacity-50': task.done}">
-              <div class="w-full flex justify-between">
+            <div class="flex gap-2 items-center">
+              <div class="card grow bg-neutral text-neutral-content p-4 flex-row justify-between" [ngClass]="{'opacity-50': task.done}">
                 <span class="relative flex items-center" [ngClass]="{'before:absolute before:w-full before:h-px before:bg-neutral-content': task.done}">{{ task.title }}</span>
+
                 <button class="btn btn-xs btn-outline btn-circle btn-primary" [ngClass]="{'bg-primary': task.done}" (click)="updateTask(task)">
                   @if(task.done) { <span class="text-primary-content icon-[material-symbols--check] text-xl"></span> }
                 </button>
               </div>
+
+              @if(task.done) {
+                <button class="btn btn-xs btn-ghost" (click)="deleteTask(task)">
+                  Delete
+                </button>
+              }
             </div>
           }
         </div>
       </div>
 
-      <button class="btn btn-secondary btn-circle fixed right-4 bottom-24" (click)="createNewTask()">
+      <button class="btn btn-secondary btn-circle fixed right-4 bottom-24" onclick="new_task_modal.showModal()">
         <span class="icon-[material-symbols--add] text-xl"></span>
       </button>
+
+      <dialog id="new_task_modal" class="modal">
+        <div class="modal-box">
+          <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+          </form>
+          <h2>New Task</h2>
+          <form class="flex flex-col gap-4 mt-4">
+            <label class="input input-bordered flex items-center gap-2">
+              Title
+              <input type="text" class="grow" placeholder="" #title/>
+            </label>
+            <button class="btn btn-primary" type="button" onclick="new_task_modal.close();" (click)="addTask(title)">Add</button>
+          </form>
+        </div>
+      </dialog>
     </section>
   `,
   styles: ``
@@ -122,13 +145,29 @@ export class HomeComponent {
   }
 
   async updateTask({id, done}: Task): Promise<void> {
-    const data = await this.todoService.updateTask(id, {done})
+    const data = await this.todoService.updateTask(id, {done: !done})
     console.log('HomeComponent', `updateTask: data = ${data}`)
     this.getTasks() // UPDATE TASK LIST
   }
 
-  createNewTask(): void {
-    console.log('HomeComponent', `createNewTask`)
+  async deleteTask({id}: Task): Promise<void> {
+    const data = await this.todoService.deleteTask(id)
+    console.log('HomeComponent', `deleteTask: data = ${data}`)
+    this.getTasks() // UPDATE TASK LIST
+  }
+
+  async addTask(input: HTMLInputElement): Promise<void> {
+    // NOT APPLICABLE IN REAL WORLD SCENARIO
+    const items = this.tasks()
+    const highestId = items.reduce((max, item) => parseInt(item.id) > parseInt(max.id) ? item : max, items[0]);
+
+    const title = input.value;
+    input.value = "";
+    const data = await this.todoService.addTask({
+      id: (parseInt(highestId.id) + 1)+"", title, done: false, date: formatDate(this.activeDate())
+    })
+    console.log('HomeComponent', `createNewTask: data = ${data}`)
+    this.getTasks() // UPDATE TASK LIST
   }
 
   isActiveDate(date: Date): boolean {
