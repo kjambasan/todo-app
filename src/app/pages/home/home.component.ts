@@ -31,7 +31,7 @@ import { Task } from '../../models/task';
         </div>
 
         <div class="w-full duration-300 overflow-hidden" [ngClass]="{'h-16': showDisplayMenu(), 'h-0': !showDisplayMenu()}">
-          <div class="w-full grid grid-cols-4 py-2 gap-4 px-4 bg-base-200">
+          <div class="w-full grid grid-cols-4 py-2 gap-4 px-4 bg-base-300">
             <!-- BUTTONS DOES NOTHING: FOR UI ONLY -->
             @for(displayMenuItem of displayMenuItems; track displayMenuItem.label; let index = $index) {
               <button class="btn btn-ghost text-xl" (click)="toggleDisplayMenu()">
@@ -65,7 +65,7 @@ import { Task } from '../../models/task';
         </div>
       </header>
 
-      <div class="w-full bg-base-200 grow">
+      <div class="w-full bg-base-200 grow rounded-t-box">
         <div class="w-full grid h-fit gap-4 p-4">
           @for(task of tasks(); track task.id) {
             <div class="flex gap-2 items-center">
@@ -164,7 +164,7 @@ export class HomeComponent {
     const title = input.value;
     input.value = "";
     const data = await this.todoService.addTask({
-      id: (parseInt(highestId.id) + 1)+"", title, done: false, date: formatDate(this.activeDate())
+      id: (parseInt(highestId?.id ?? 0) + 1)+"", title, done: false, date: formatDate(this.activeDate())
     })
     console.log('HomeComponent', `createNewTask: data = ${data}`)
     this.getTasks() // UPDATE TASK LIST

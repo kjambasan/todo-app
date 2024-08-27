@@ -29,6 +29,12 @@
       "title": "Do something",
       "done": false,
       "date": "2024-08-27"
+    },
+    {
+      "id": "1",
+      "title": "Exercise",
+      "done": false,
+      "date": "2024-08-28"
     }
   ]
 }
